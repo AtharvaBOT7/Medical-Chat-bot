@@ -7,49 +7,69 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <div class="chat-container">
-    <header class="chat-header">
-      <h1>🩺 Medical Chatbot</h1>
-      <p>Ask me anything related to health and wellness</p>
-    </header>
-
-    <div class="chat-box" id="chat-box">
-      <!-- Messages will appear here -->
+  <div class="container">
+    <div class="chat-panel">
+      <div class="panel-heading">
+        🩺 Medical AI Chatbot – Ask Your Health Questions!
+      </div>
+      <div class="panel-body" id="chatBody">
+        <!-- Chat messages appear here -->
+      </div>
+      <div class="panel-footer">
+        <form id="chat-form">
+          <div class="input-group">
+            <input type="text" id="messageText" placeholder="Type your question..." autocomplete="off" required />
+            <button type="submit" class="btn">Send</button>
+          </div>
+        </form>
+      </div>
     </div>
-
-    <form class="chat-input" id="chat-form">
-      <input type="text" id="user-input" placeholder="Type your question..." autocomplete="off" required />
-      <button type="submit">Send</button>
-    </form>
   </div>
 
   <script>
-    const chatBox = document.getElementById('chat-box');
-    const chatForm = document.getElementById('chat-form');
-    const userInput = document.getElementById('user-input');
+    const chatBody = document.getElementById("chatBody");
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("messageText");
 
-    chatForm.addEventListener('submit', async (e) => {
+    form.addEventListener("submit", function (e) {
       e.preventDefault();
-      const userText = userInput.value;
-      appendMessage('You', userText, 'user');
-      userInput.value = '';
+      const msg = input.value.trim();
+      if (!msg) return;
 
-      const response = await fetch('/get_response', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userText })
+      appendMessage(msg, "user-msg");
+      input.value = "";
+
+      appendMessage("⏳ Thinking...", "bot-msg", "loading");
+
+      fetch("/get", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ msg: msg })
+      })
+      .then(res => res.json())
+      .then(data => {
+        removeLoading();
+        appendMessage(data.response, "bot-msg");
+      })
+      .catch(err => {
+        removeLoading();
+        appendMessage("⚠️ Something went wrong.", "bot-msg");
+        console.error(err);
       });
-
-      const data = await response.json();
-      appendMessage('Bot', data.response, 'bot');
     });
 
-    function appendMessage(sender, text, type) {
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message', type);
-      messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      chatBox.appendChild(messageDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
+    function appendMessage(text, className, id = "") {
+      const div = document.createElement("div");
+      div.className = className;
+      if (id) div.id = id;
+      div.innerText = text;
+      chatBody.appendChild(div);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function removeLoading() {
+      const loading = document.getElementById("loading");
+      if (loading) loading.remove();
     }
   </script>
 </body>

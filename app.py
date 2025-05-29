@@ -43,7 +43,7 @@ llm=CTransformers(model="llama-2-7b-chat.ggmlv3.q4_0.bin",
                   model_type="llama",
                   verbose=True,
                   config={'max_new_tokens':512,
-                          'temperature':0.3})
+                          'temperature':0.7})
 
 
 class PineconeRetriever(BaseRetriever):
@@ -77,6 +77,26 @@ qa = RetrievalQA.from_chain_type(
 @app.route("/")
 def index():
     return render_template('chat.html')
+
+@app.route("/get", methods=["POST"])
+def chat():
+    try:
+        data = request.get_json(force=True)  
+        user_input = data.get("msg", "").strip()  
+
+        if not user_input:
+            return jsonify({"response": "Please enter a valid question."})
+
+        print("User asked:", user_input)
+
+        result = qa({"query": user_input})
+        print("RESPONSE:", result["result"])
+
+        return jsonify({"response": result["result"]})
+    
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({"response": "Sorry, something went wrong."})
 
 
 
