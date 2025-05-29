@@ -17,3 +17,8 @@ Tech stack used:
 6. Pinecone
 
 Virtual Environment used: medicalbot.
+
+Steps to run:
+
+1. python store_index.py
+2. python app.py
