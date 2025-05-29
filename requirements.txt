@@ -4,3 +4,5 @@ pinecone
 langchain==0.0.225
 flask
 openai
+
+-e .
