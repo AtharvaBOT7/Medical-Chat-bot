@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Medical Chatbot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="chat-container">
+    <header class="chat-header">
+      <h1>🩺 Medical Chatbot</h1>
+      <p>Ask me anything related to health and wellness</p>
+    </header>
+
+    <div class="chat-box" id="chat-box">
+      <!-- Messages will appear here -->
+    </div>
+
+    <form class="chat-input" id="chat-form">
+      <input type="text" id="user-input" placeholder="Type your question..." autocomplete="off" required />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userText = userInput.value;
+      appendMessage('You', userText, 'user');
+      userInput.value = '';
+
+      const response = await fetch('/get_response', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userText })
+      });
+
+      const data = await response.json();
+      appendMessage('Bot', data.response, 'bot');
+    });
+
+    function appendMessage(sender, text, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', type);
+      messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chatBox.appendChild(messageDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
