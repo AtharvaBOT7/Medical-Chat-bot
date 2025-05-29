@@ -6,14 +6,14 @@ Architectural Brief Overview:
 5. Now we will finally use this semantic index to build our knowledge base, to built the KB in our case, we will use Pinecone vector store.
 6. The user will ask a query using the front end application. 
 7. The user query will get converted to a query embedding and this embedding will be used to retrieve a ranked result from the knowledge base, the ranked result is the closest vector to the query embedding.
-8. Now this ranked result is sent to our large language model, in our case we are using Meta Llama 4 Maverick model and then it will give us the exact answer. 
+8. Now this ranked result is sent to our large language model, in our case we are using Meta Llama 2 model and then it will give us the exact answer. 
 
 Tech stack used:
 1. Python
 2. Langchain
 3. Hugging face
 4. Flask 
-5. Meta Llama 4 Maverick
+5. Meta Llama 2
 6. Pinecone
 
 Virtual Environment used: medicalbot.
